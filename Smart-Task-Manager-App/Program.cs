@@ -10,10 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
-    ));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
@@ -23,11 +20,11 @@ using (var scope = app.Services.CreateScope())
     try
     {
         dbContext.Database.EnsureCreated();
-        Console.WriteLine("🤓 MySQL работает, ДИЕР🤓 ОБЯЗАН🤓 СВОИ🤓 ЗАДАЧИ🤓 ВЫПОЛНИТЬ🤓");
+        Console.WriteLine("База данных SQLite создана и готова к работе");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Ошибка: {ex.Message}");
+        Console.WriteLine($"Ошибка при создании базы данных: {ex.Message}");
     }
 }
 

@@ -21,15 +21,15 @@ namespace SmartTaskManager.Data
                 entity.HasIndex(u => u.Username).IsUnique();
                 entity.HasIndex(u => u.Email).IsUnique();
                 entity.Property(u => u.Role).HasConversion<string>();
-                entity.Property(u => u.CreatedAt).HasDefaultValueSql("NOW(3)");
+                entity.Property(u => u.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
             });
 
             modelBuilder.Entity<Models.Task>(entity =>
             {
                 entity.Property(t => t.Priority).HasConversion<string>();
                 entity.Property(t => t.Status).HasConversion<string>();
-                entity.Property(t => t.CreatedAt).HasDefaultValueSql("NOW(3)");
-                entity.Property(t => t.LastUpdatedAt).HasDefaultValueSql("NOW(3)");
+                entity.Property(t => t.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(t => t.LastUpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.HasOne(t => t.AssignedUser)
                     .WithMany(u => u.Tasks)
                     .HasForeignKey(t => t.AssignedUserId)
@@ -39,7 +39,7 @@ namespace SmartTaskManager.Data
             modelBuilder.Entity<Report>(entity =>
             {
                 entity.Property(r => r.Period).HasConversion<string>();
-                entity.Property(r => r.GeneratedAt).HasDefaultValueSql("NOW(3)");
+                entity.Property(r => r.GeneratedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.HasOne(r => r.User)
                     .WithMany(u => u.Reports)
                     .HasForeignKey(r => r.UserId)
@@ -48,7 +48,7 @@ namespace SmartTaskManager.Data
 
             modelBuilder.Entity<TaskLog>(entity =>
             {
-                entity.Property(l => l.RescheduledAt).HasDefaultValueSql("NOW(3)");
+                entity.Property(l => l.RescheduledAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.HasOne(l => l.Task)
                     .WithMany()
                     .HasForeignKey(l => l.TaskId)
@@ -58,7 +58,7 @@ namespace SmartTaskManager.Data
             modelBuilder.Entity<RefreshToken>(entity =>
             {
                 entity.HasIndex(rt => rt.Token).IsUnique();
-                entity.Property(rt => rt.Created).HasDefaultValueSql("NOW(3)");
+                entity.Property(rt => rt.Created).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.Property(rt => rt.Expires).IsRequired();
                 entity.HasOne(rt => rt.User)
                     .WithMany()
