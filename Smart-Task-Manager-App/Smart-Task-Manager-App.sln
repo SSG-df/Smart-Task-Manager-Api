@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smart-Task-Manager-App", "Smart-Task-Manager-App.csproj", "{863BDD49-A5BD-6936-C321-902C1B77CAEE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{863BDD49-A5BD-6936-C321-902C1B77CAEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{863BDD49-A5BD-6936-C321-902C1B77CAEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{863BDD49-A5BD-6936-C321-902C1B77CAEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{863BDD49-A5BD-6936-C321-902C1B77CAEE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {658242A1-C1CF-4957-BEEE-BA616FF59954}
+	EndGlobalSection
+EndGlobal

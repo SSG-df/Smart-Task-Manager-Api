@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../buildMultiTargeting/Smart-Task-Manager-App.props" />
+</Project>

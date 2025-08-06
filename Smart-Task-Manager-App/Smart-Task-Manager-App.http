@@ -1,0 +1,6 @@
+@Smart_Task_Manager_App_HostAddress = http://localhost:5095
+
+GET {{Smart_Task_Manager_App_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
