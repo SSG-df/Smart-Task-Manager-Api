@@ -21,9 +21,9 @@ namespace SmartTaskManager.Services
             IConfiguration config,
             IPasswordHasherService hasher)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _config = config ?? throw new ArgumentNullException(nameof(config));
-            _hasher = hasher ?? throw new ArgumentNullException(nameof(hasher));
+            _context = context;
+            _config = config;
+            _hasher = hasher;
         }
 
         public async Task<AuthResponseDto?> RegisterAsync(RegisterDto dto)
