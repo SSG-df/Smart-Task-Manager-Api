@@ -7,6 +7,7 @@ using SmartTaskManager.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using SmartTaskManager.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -37,6 +38,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<TaskSchedulerService>();
 
 builder.Services.AddSwaggerGen(c =>
