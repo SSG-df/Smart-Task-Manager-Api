@@ -36,6 +36,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<TaskSchedulerService>();
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -43,7 +45,7 @@ builder.Services.AddSwaggerGen(c =>
 
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
-        Description = "Введите токен в формате: Bearer {token}",
+        Description = "JWT Authorization header using the Bearer scheme. Example: Bearer {token}",
         Name = "Authorization",
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
         Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
@@ -78,11 +80,11 @@ using (var scope = app.Services.CreateScope())
     try
     {
         dbContext.Database.EnsureCreated();
-        Console.WriteLine("База данных SQLite создана и готова к работе");
+        Console.WriteLine("SQLite data base created.");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Ошибка при создании базы данных: {ex.Message}");
+        Console.WriteLine($"Error creating SQLite data base: {ex.Message}");
     }
 }
 

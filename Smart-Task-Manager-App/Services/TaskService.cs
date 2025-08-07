@@ -17,14 +17,28 @@ namespace SmartTaskManager.Services
 
         public async Task<TaskDto> CreateAsync(TaskCreateDto dto, string updatedBy)
         {
+            bool userExists = await _context.Users.AnyAsync(u => u.Id == dto.AssignedUserId);
+            if (!userExists)
+            {
+                throw new ArgumentException("User not found");
+            }
+
+            if (dto.DueDate <= DateTime.UtcNow)
+            {
+                throw new ArgumentException("Due date must be in future");
+            }
+
             var task = new Models.Task
             {
                 Title = dto.Title,
                 Description = dto.Description,
                 DueDate = dto.DueDate,
                 Priority = Enum.Parse<TaskPriority>(dto.Priority, true),
+                Status = Models.TaskStatus.New,
                 AssignedUserId = dto.AssignedUserId,
-                LastUpdatedBy = updatedBy
+                LastUpdatedBy = updatedBy,
+                CreatedAt = DateTime.UtcNow,
+                LastUpdatedAt = DateTime.UtcNow
             };
 
             _context.Tasks.Add(task);
@@ -45,13 +59,13 @@ namespace SmartTaskManager.Services
                 .Select(t => new TaskDto
                 {
                     Id = t.Id,
-                    Title = t.Title!,
+                    Title = t.Title,
                     Description = t.Description,
                     DueDate = t.DueDate,
                     Priority = t.Priority.ToString(),
                     Status = t.Status.ToString(),
                     AssignedUserId = t.AssignedUserId,
-                    AssignedUsername = t.AssignedUser!.Username,
+                    AssignedUsername = t.AssignedUser.Username,
                     CreatedAt = t.CreatedAt,
                     CompletedAt = t.CompletedAt,
                     RescheduledDate = t.RescheduledDate,
@@ -64,20 +78,48 @@ namespace SmartTaskManager.Services
         public async Task<TaskDto?> UpdateAsync(int id, TaskUpdateDto dto, string updatedBy)
         {
             var task = await _context.Tasks.FindAsync(id);
-            if (task == null) return null;
+            if (task == null)
+            {
+                return null;
+            }
 
-            if (dto.Title != null) task.Title = dto.Title;
-            if (dto.Description != null) task.Description = dto.Description;
-            if (dto.DueDate.HasValue) task.DueDate = dto.DueDate.Value;
-            if (dto.Priority != null) task.Priority = Enum.Parse<TaskPriority>(dto.Priority, true);
-            if (dto.Status != null) task.Status = Enum.Parse<SmartTaskManager.Models.TaskStatus>(dto.Status, true);
-            if (dto.RescheduledDate.HasValue) task.RescheduledDate = dto.RescheduledDate;
+            if (dto.Title != null)
+            {
+                task.Title = dto.Title;
+            }
+
+            if (dto.Description != null)
+            {
+                task.Description = dto.Description;
+            }
+
+            if (dto.DueDate.HasValue)
+            {
+                task.DueDate = dto.DueDate.Value;
+            }
+
+            if (dto.Priority != null)
+            {
+                task.Priority = Enum.Parse<TaskPriority>(dto.Priority, true);
+            }
+
+            if (dto.Status != null)
+            {
+                task.Status = Enum.Parse<Models.TaskStatus>(dto.Status, true);
+            }
+
+            if (dto.RescheduledDate.HasValue)
+            {
+                task.RescheduledDate = dto.RescheduledDate.Value;
+            }
 
             task.LastUpdatedBy = updatedBy;
             task.LastUpdatedAt = DateTime.UtcNow;
 
-            if (task.Status == SmartTaskManager.Models.TaskStatus.Completed && task.CompletedAt == null)
+            if (task.Status == Models.TaskStatus.Completed && task.CompletedAt == null)
+            {
                 task.CompletedAt = DateTime.UtcNow;
+            }
 
             await _context.SaveChangesAsync();
             return await MapToDto(id);
@@ -86,7 +128,10 @@ namespace SmartTaskManager.Services
         public async Task<bool> DeleteAsync(int id)
         {
             var task = await _context.Tasks.FindAsync(id);
-            if (task == null) return false;
+            if (task == null)
+            {
+                return false;
+            }
 
             _context.Tasks.Remove(task);
             await _context.SaveChangesAsync();
@@ -101,13 +146,13 @@ namespace SmartTaskManager.Services
                 .Select(t => new TaskDto
                 {
                     Id = t.Id,
-                    Title = t.Title!,
+                    Title = t.Title,
                     Description = t.Description,
                     DueDate = t.DueDate,
                     Priority = t.Priority.ToString(),
                     Status = t.Status.ToString(),
                     AssignedUserId = t.AssignedUserId,
-                    AssignedUsername = t.AssignedUser!.Username,
+                    AssignedUsername = t.AssignedUser.Username,
                     CreatedAt = t.CreatedAt,
                     CompletedAt = t.CompletedAt,
                     RescheduledDate = t.RescheduledDate,

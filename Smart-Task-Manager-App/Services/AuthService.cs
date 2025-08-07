@@ -1,4 +1,3 @@
-// Services/AuthService.cs
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SmartTaskManager.Data;
@@ -17,25 +16,50 @@ namespace SmartTaskManager.Services
         private readonly IConfiguration _config;
         private readonly IPasswordHasherService _hasher;
 
-        public AuthService(SmartTaskManagerDbContext context, IConfiguration config, IPasswordHasherService hasher)
+        public AuthService(
+            SmartTaskManagerDbContext context,
+            IConfiguration config,
+            IPasswordHasherService hasher)
         {
-            _context = context;
-            _config = config;
-            _hasher = hasher;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _config = config ?? throw new ArgumentNullException(nameof(config));
+            _hasher = hasher ?? throw new ArgumentNullException(nameof(hasher));
         }
 
         public async Task<AuthResponseDto?> RegisterAsync(RegisterDto dto)
         {
-            if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
-                return null;
+            if (dto == null)
+            {
+                throw new ArgumentNullException(nameof(dto));
+            }
 
-            if (await _context.Users.AnyAsync(u => u.Username == dto.Username))
+            if (string.IsNullOrWhiteSpace(dto.Email))
+            {
+                throw new ArgumentException("Email cannot be empty");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Username))
+            {
+                throw new ArgumentException("Username cannot be empty");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Password))
+            {
+                throw new ArgumentException("Password cannot be empty");
+            }
+
+            bool userExists = await _context.Users
+                .AnyAsync(u => u.Email == dto.Email.Trim() || u.Username == dto.Username.Trim());
+
+            if (userExists)
+            {
                 return null;
+            }
 
             var user = new User
             {
-                Username = dto.Username,
-                Email = dto.Email,
+                Username = dto.Username.Trim(),
+                Email = dto.Email.Trim().ToLower(),
                 Role = dto.Role,
                 PasswordHash = _hasher.Hash(dto.Password)
             };
@@ -48,41 +72,101 @@ namespace SmartTaskManager.Services
 
         public async Task<AuthResponseDto?> LoginAsync(LoginDto dto)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
-            if (user == null || !_hasher.Verify(dto.Password, user.PasswordHash!))
+            if (dto == null)
+            {
+                throw new ArgumentNullException(nameof(dto));
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Email))
+            {
+                throw new ArgumentException("Email cannot be empty");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Password))
+            {
+                throw new ArgumentException("Password cannot be empty");
+            }
+
+            var normalizedEmail = dto.Email.Trim().ToLower();
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == normalizedEmail);
+
+            if (user == null || string.IsNullOrEmpty(user.PasswordHash) || !_hasher.Verify(dto.Password, user.PasswordHash))
+            {
                 return null;
+            }
 
             return GenerateToken(user);
         }
 
         private AuthResponseDto GenerateToken(User user)
         {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (string.IsNullOrWhiteSpace(user.Username))
+            {
+                throw new ArgumentException("Username cannot be empty");
+            }
+
+            if (string.IsNullOrWhiteSpace(user.Email))
+            {
+                throw new ArgumentException("Email cannot be empty");
+            }
+
+            var jwtKey = _config["JwtSettings:Key"];
+            var jwtIssuer = _config["JwtSettings:Issuer"];
+            var jwtAudience = _config["JwtSettings:Audience"];
+            var jwtExpires = _config["JwtSettings:ExpiresInMinutes"];
+
+            if (string.IsNullOrEmpty(jwtKey))
+            {
+                throw new ArgumentNullException("JwtSettings:Key configuration is missing");
+            }
+
+            if (string.IsNullOrEmpty(jwtIssuer))
+            {
+                throw new ArgumentNullException("JwtSettings:Issuer configuration is missing");
+            }
+
+            if (string.IsNullOrEmpty(jwtAudience))
+            {
+                throw new ArgumentNullException("JwtSettings:Audience configuration is missing");
+            }
+
+            if (string.IsNullOrEmpty(jwtExpires))
+            {
+                throw new ArgumentNullException("JwtSettings:ExpiresInMinutes configuration is missing");
+            }
+
             var claims = new[]
             {
-        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        new Claim(ClaimTypes.Name, user.Username!),
-        new Claim(ClaimTypes.Role, user.Role.ToString())
-    };
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
+            };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtSettings:Key"]!));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtExpires));
 
             var token = new JwtSecurityToken(
-                issuer: _config["JwtSettings:Issuer"],
-                audience: _config["JwtSettings:Audience"],
+                issuer: jwtIssuer,
+                audience: jwtAudience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(_config["JwtSettings:ExpiresInMinutes"])),
+                expires: expires,
                 signingCredentials: creds
             );
 
             return new AuthResponseDto
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
-                Username = user.Username!,
-                Email = user.Email!,
+                Username = user.Username,
+                Email = user.Email,
                 Role = user.Role.ToString()
             };
         }
-
     }
 }

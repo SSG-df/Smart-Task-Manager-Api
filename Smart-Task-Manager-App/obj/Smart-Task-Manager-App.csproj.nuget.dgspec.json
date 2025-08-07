@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\user\\Desktop\\Smart-Task-Manager-Api\\Smart-Task-Manager-App\\Smart-Task-Manager-App.csproj": {}
+    "/home/sqwert/Smart-Task-Manager-Api/Smart-Task-Manager-App/Smart-Task-Manager-App.csproj": {}
   },
   "projects": {
-    "C:\\Users\\user\\Desktop\\Smart-Task-Manager-Api\\Smart-Task-Manager-App\\Smart-Task-Manager-App.csproj": {
+    "/home/sqwert/Smart-Task-Manager-Api/Smart-Task-Manager-App/Smart-Task-Manager-App.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\user\\Desktop\\Smart-Task-Manager-Api\\Smart-Task-Manager-App\\Smart-Task-Manager-App.csproj",
+        "projectUniqueName": "/home/sqwert/Smart-Task-Manager-Api/Smart-Task-Manager-App/Smart-Task-Manager-App.csproj",
         "projectName": "Smart-Task-Manager-App",
-        "projectPath": "C:\\Users\\user\\Desktop\\Smart-Task-Manager-Api\\Smart-Task-Manager-App\\Smart-Task-Manager-App.csproj",
-        "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\user\\Desktop\\Smart-Task-Manager-Api\\Smart-Task-Manager-App\\obj\\",
+        "projectPath": "/home/sqwert/Smart-Task-Manager-Api/Smart-Task-Manager-App/Smart-Task-Manager-App.csproj",
+        "packagesPath": "/home/sqwert/.nuget/packages/",
+        "outputPath": "/home/sqwert/Smart-Task-Manager-Api/Smart-Task-Manager-App/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/home/sqwert/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -38,7 +38,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net9.0": {
@@ -47,6 +47,10 @@
             "AutoMapper.Extensions.Microsoft.DependencyInjection": {
               "target": "Package",
               "version": "[12.0.1, )"
+            },
+            "Microsoft.AspNetCore": {
+              "target": "Package",
+              "version": "[2.3.0, )"
             },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
@@ -63,6 +67,10 @@
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.8, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
               "version": "[9.0.8, )"
             },
@@ -96,6 +104,12 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[9.0.5, 9.0.5]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -104,7 +118,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.106/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
