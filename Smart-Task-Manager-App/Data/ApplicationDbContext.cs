@@ -3,9 +3,9 @@ using SmartTaskManager.Models;
 
 namespace SmartTaskManager.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class SmartTaskManagerDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public SmartTaskManagerDbContext(DbContextOptions<SmartTaskManagerDbContext> options)
             : base(options) { }
 
         public DbSet<User> Users { get; set; }
