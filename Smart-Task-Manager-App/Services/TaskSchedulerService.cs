@@ -50,6 +50,7 @@ namespace SmartTaskManager.Services
             var context = scope.ServiceProvider.GetRequiredService<SmartTaskManagerDbContext>();
 
             var overdueTasks = await context.Tasks
+                .Include(t => t.AssignedUser)
                 .Where(t => t.DueDate < DateTime.UtcNow && 
                            t.Status != Models.TaskStatus.Completed)
                 .ToListAsync(stoppingToken);
@@ -59,6 +60,7 @@ namespace SmartTaskManager.Services
                 var originalDueDate = task.DueDate;
                 task.DueDate = originalDueDate.AddDays(RescheduleDays);
                 task.Status = Models.TaskStatus.Overdue;
+                task.RescheduledDate = DateTime.UtcNow;
                 
                 _logger.LogInformation(
                     "Task '{Title}' (ID: {TaskId}) rescheduled from {OldDate} to {NewDate}",
@@ -66,11 +68,43 @@ namespace SmartTaskManager.Services
                     task.Id,
                     originalDueDate,
                     task.DueDate);
+
+                await SendMockEmailNotificationAsync(task, originalDueDate);
             }
 
             if (overdueTasks.Any())
             {
                 await context.SaveChangesAsync(stoppingToken);
+            }
+        }
+
+        private async Task SendMockEmailNotificationAsync(Models.Task task, DateTime originalDueDate)
+        {
+            try
+            {
+                var userEmail = task.AssignedUser?.Email ?? "unknown@email.com";
+                var userName = task.AssignedUser?.Username ?? "Unknown User";
+                
+                _logger.LogInformation(
+                    "📧 MOCK EMAIL SENT to {UserEmail} ({UserName}): " +
+                    "Your task '{TaskTitle}' (ID: {TaskId}) was overdue on {OriginalDueDate} " +
+                    "and has been automatically rescheduled to {NewDueDate}. " +
+                    "Please complete it as soon as possible.",
+                    userEmail,
+                    userName,
+                    task.Title,
+                    task.Id,
+                    originalDueDate.ToString("yyyy-MM-dd HH:mm"),
+                    task.DueDate.ToString("yyyy-MM-dd HH:mm"));
+
+                await Task.Delay(100);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, 
+                    "Failed to send mock email notification for task {TaskId} to user {UserId}",
+                    task.Id, 
+                    task.AssignedUserId);
             }
         }
     }

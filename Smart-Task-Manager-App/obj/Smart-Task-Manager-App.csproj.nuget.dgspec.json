@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\user\\Projects\\Smart-Task-Manager-Api\\Smart-Task-Manager-App\\Smart-Task-Manager-App.csproj": {}
+    "/home/sqwert/Smart-Task-Manager-Api/Smart-Task-Manager-App/Smart-Task-Manager-App.csproj": {}
   },
   "projects": {
-    "C:\\Users\\user\\Projects\\Smart-Task-Manager-Api\\Smart-Task-Manager-App\\Smart-Task-Manager-App.csproj": {
+    "/home/sqwert/Smart-Task-Manager-Api/Smart-Task-Manager-App/Smart-Task-Manager-App.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\user\\Projects\\Smart-Task-Manager-Api\\Smart-Task-Manager-App\\Smart-Task-Manager-App.csproj",
+        "projectUniqueName": "/home/sqwert/Smart-Task-Manager-Api/Smart-Task-Manager-App/Smart-Task-Manager-App.csproj",
         "projectName": "Smart-Task-Manager-App",
-        "projectPath": "C:\\Users\\user\\Projects\\Smart-Task-Manager-Api\\Smart-Task-Manager-App\\Smart-Task-Manager-App.csproj",
-        "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\user\\Projects\\Smart-Task-Manager-Api\\Smart-Task-Manager-App\\obj\\",
+        "projectPath": "/home/sqwert/Smart-Task-Manager-Api/Smart-Task-Manager-App/Smart-Task-Manager-App.csproj",
+        "packagesPath": "/home/sqwert/.nuget/packages/",
+        "outputPath": "/home/sqwert/Smart-Task-Manager-Api/Smart-Task-Manager-App/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/home/sqwert/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -38,7 +38,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.200"
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net9.0": {
@@ -104,6 +104,12 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[9.0.5, 9.0.5]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -112,7 +118,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.106/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

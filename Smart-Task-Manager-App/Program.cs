@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using System.Security.Claims;
 using SmartTaskManager.Data;
 using SmartTaskManager.Interfaces;
 using SmartTaskManager.Services;
@@ -28,7 +28,8 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!)),
+        RoleClaimType = ClaimTypes.Role
     };
 });
 
@@ -39,7 +40,7 @@ builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IReportService, ReportService>();
-builder.Services.AddScoped<TaskSchedulerService>();
+builder.Services.AddHostedService<TaskSchedulerService>();
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -79,14 +80,17 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<SmartTaskManagerDbContext>();
+    var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasherService>();
+    
     try
     {
         dbContext.Database.EnsureCreated();
-        Console.WriteLine("SQLite data base created.");
+        
+        await SmartTaskManager.Data.SeedData.InitializeAsync(dbContext, passwordHasher);
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Error creating SQLite data base: {ex.Message}");
+        Console.WriteLine($"Error creating database: {ex.Message}");
     }
 }
 

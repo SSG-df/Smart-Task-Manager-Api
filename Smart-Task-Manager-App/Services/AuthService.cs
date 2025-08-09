@@ -60,7 +60,7 @@ namespace SmartTaskManager.Services
             {
                 Username = dto.Username.Trim(),
                 Email = dto.Email.Trim().ToLower(),
-                Role = dto.Role,
+                Role = UserRole.RegularUser,
                 PasswordHash = _hasher.Hash(dto.Password)
             };
 
@@ -97,6 +97,86 @@ namespace SmartTaskManager.Services
             }
 
             return GenerateToken(user);
+        }
+
+        public async Task<AuthResponseDto?> CreateAdminAsync(CreateAdminDto dto)
+        {
+            if (dto == null)
+            {
+                throw new ArgumentNullException(nameof(dto));
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Email))
+            {
+                throw new ArgumentException("Email cannot be empty");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Username))
+            {
+                throw new ArgumentException("Username cannot be empty");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Password))
+            {
+                throw new ArgumentException("Password cannot be empty");
+            }
+
+            bool userExists = await _context.Users
+                .AnyAsync(u => u.Email == dto.Email.Trim() || u.Username == dto.Username.Trim());
+
+            if (userExists)
+            {
+                return null;
+            }
+
+            var admin = new User
+            {
+                Username = dto.Username.Trim(),
+                Email = dto.Email.Trim().ToLower(),
+                Role = UserRole.Admin,
+                PasswordHash = _hasher.Hash(dto.Password)
+            };
+
+            _context.Users.Add(admin);
+            await _context.SaveChangesAsync();
+
+            return GenerateToken(admin);
+        }
+
+        public async Task<List<UserDto>> GetAllUsersAsync()
+        {
+            return await _context.Users
+                .Select(u => new UserDto
+                {
+                    Id = u.Id,
+                    Username = u.Username!,
+                    Email = u.Email!,
+                    Role = u.Role.ToString(),
+                    CreatedAt = u.CreatedAt
+                })
+                .ToListAsync();
+        }
+
+        public async Task<bool> DeleteUserAsync(int userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return false;
+            }
+
+            if (user.Role == UserRole.Admin)
+            {
+                var adminCount = await _context.Users.CountAsync(u => u.Role == UserRole.Admin);
+                if (adminCount <= 1)
+                {
+                    return false;
+                }
+            }
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         private AuthResponseDto GenerateToken(User user)
@@ -145,7 +225,7 @@ namespace SmartTaskManager.Services
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, user.Role.ToString())
+                new Claim("role", user.Role.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));

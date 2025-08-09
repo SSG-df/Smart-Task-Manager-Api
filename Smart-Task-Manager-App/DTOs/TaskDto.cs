@@ -1,4 +1,4 @@
-// DTOs/Tasks/TaskDto.cs
+
 namespace SmartTaskManager.DTOs;
 
 public class TaskDto

@@ -2,8 +2,8 @@ namespace SmartTaskManager.Models
 {
     public enum UserRole
     {
-        RegularUser = 0,
-        Admin = 1
+        RegularUser,
+        Admin
     }
 
     public enum TaskPriority

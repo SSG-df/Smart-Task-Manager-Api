@@ -1,9 +1,8 @@
-using SmartTaskManager.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace SmartTaskManager.DTOs.Auth
 {
-    public class RegisterDto
+    public class CreateAdminDto
     {
         [Required]
         public string Username { get; set; } = string.Empty;
